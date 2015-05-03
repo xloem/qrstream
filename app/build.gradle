@@ -21,9 +21,6 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    // You must install or update the Support Repository through the SDK manager to use this dependency.
-    // You must install or update the Support Repository through the SDK manager to use this dependency.
-    compile 'com.android.support:appcompat-v7:19.+'
-    compile 'com.google.zxing:core:3.1.0'
-    compile 'com.google.zxing:android-integration:3.1.0'
+    //compile 'com.google.zxing:core:3.+'
+    compile 'com.google.zxing:android-integration:3.+'
 }
