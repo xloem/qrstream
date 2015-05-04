@@ -107,6 +107,8 @@ public class Send extends Activity {
         // use actual average size given total number
         buffer = CharBuffer.allocate((dataRemaining - 1) / total + 1);
 
+        Toast.makeText(getApplicationContext(), "Sending " + String.valueOf(dataRemaining) + " bytes in " + String.valueOf(total) + " QR codes", Toast.LENGTH_SHORT).show();
+
         total += index;
     }
 
@@ -139,7 +141,6 @@ public class Send extends Activity {
             buffer.rewind();
             buffer.limit(len);
             integrator.shareText(buffer);
-            //Toast.makeText(getApplicationContext(), "QR #" + String.valueOf(index) + " / " + String.valueOf(total), Toast.LENGTH_SHORT).show();
         } else {
             setResult(RESULT_OK, getIntent());
             finish();
