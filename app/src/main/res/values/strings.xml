@@ -2,5 +2,8 @@
 <resources>
 
     <string name="app_name">QRStream</string>
+    <string name="launcher_receive">Receive QR Stream...</string>
+    <string name="launcher_send_file">Send File</string>
+    <string name="launcher_send_clipboard">Send Clipboard</string>
 
 </resources>
