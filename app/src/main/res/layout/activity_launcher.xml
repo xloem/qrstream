@@ -1,0 +1,25 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <Button
+        android:id="@+id/receive_stream_button"
+        android:layout_width="match_parent"
+        android:layout_height="?android:attr/listPreferredItemHeight"
+        android:text="@string/launcher_receive"
+        android:drawableRight="@drawable/ic_receive"/>
+    <Button
+        android:id="@+id/send_file_button"
+        android:layout_width="match_parent"
+        android:layout_height="?android:attr/listPreferredItemHeight"
+        android:text="@string/launcher_send_file"
+        android:drawableRight="@drawable/ic_file"/>
+    <Button
+        android:id="@+id/send_clipboard_button"
+        android:layout_width="match_parent"
+        android:layout_height="?android:attr/listPreferredItemHeight"
+        android:text="@string/launcher_send_clipboard"
+        android:drawableRight="@drawable/ic_clipboard"/>
+
+</LinearLayout>
