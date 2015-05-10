@@ -1,0 +1,16 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <CheckBoxPreference
+        android:key="drop_duplicates"
+        android:title="@string/pref_title_drop_duplicates"
+        android:summary="@string/pref_description_drop_duplicates"
+        android:defaultValue="true" />
+
+    <EditTextPreference
+        android:key="scan_delay"
+        android:title="@string/pref_title_scan_delay"
+        android:defaultValue="0"
+	android:inputType="number"
+        />
+
+</PreferenceScreen>

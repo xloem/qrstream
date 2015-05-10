@@ -22,4 +22,11 @@
         android:text="@string/launcher_send_clipboard"
         android:drawableRight="@drawable/ic_clipboard"/>
 
+    <Button
+        android:id="@+id/settings_button"
+        android:layout_width="match_parent"
+        android:layout_height="?android:attr/listPreferredItemHeight"
+        android:text="@string/launcher_settings"
+        android:drawableRight="@drawable/ic_settings"/>
+
 </LinearLayout>

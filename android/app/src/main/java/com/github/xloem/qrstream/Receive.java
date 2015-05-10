@@ -6,8 +6,10 @@ import com.google.zxing.integration.android.IntentResult;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.widget.Toast;
 
 import java.io.BufferedWriter;
@@ -64,9 +66,12 @@ public class Receive extends Activity {
     }
 
     private void readOne() {
+
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+
         IntentIntegrator integrator = new IntentIntegrator(this);
         // TODO: handle if zxing is not installed (AlertDialog is returned rather than null)
-        integrator.addExtra("RESULT_DISPLAY_DURATION_MS", 0L);
+        integrator.addExtra("RESULT_DISPLAY_DURATION_MS", Long.valueOf(sharedPref.getString("scan_delay", "0")));
         integrator.addExtra("PROMPT_MESSAGE", "Scan QR Code #" + String.valueOf(index) + " or hit back if done.");
         integrator.initiateScan(IntentIntegrator.QR_CODE_TYPES);
     }
@@ -76,13 +81,19 @@ public class Receive extends Activity {
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
         if (result != null) try {
             if (result.getFormatName() != null) {
+                SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
                 byte[] bytes = result.getRawBytes();
-                if (!Arrays.equals(bytes, lastBytes)) {
-                    // not a rescan of last qr
-                    tempWriter.write(result.getContents());
-                    index++;
-                    lastBytes = bytes;
+                if (sharedPref.getBoolean("drop_duplicates", true)
+                    && Arrays.equals(bytes, lastBytes))
+                {
+                    // rescan of last qr
+                    return;
                 }
+
+                tempWriter.write(result.getContents());
+                index++;
+                lastBytes = bytes;
+
                 // readOne() will be called in onResume
                 return;
             }

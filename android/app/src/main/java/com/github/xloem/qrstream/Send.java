@@ -4,7 +4,9 @@ import com.google.zxing.integration.android.IntentIntegrator;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
@@ -53,9 +55,10 @@ public class Send extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+
         // Guess the max QR code size given a target QR cell size
-        final float minCellMicrometers = 384;
-        //final float minCellMicrometers = 1024; // for blurry cams
+        float minCellMicrometers = Float.valueOf(sharedPref.getString("cell_size", "640"));
 
         Display display = getWindowManager().getDefaultDisplay();
         DisplayMetrics metrics = getResources().getDisplayMetrics();

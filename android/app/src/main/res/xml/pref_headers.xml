@@ -1,0 +1,13 @@
+<preference-headers xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- These settings headers are only used on tablets. -->
+
+    <header
+        android:fragment="com.github.xloem.qrstream.Settings$SendingPreferenceFragment"
+        android:title="@string/pref_header_sending" />
+
+    <header
+        android:fragment="com.github.xloem.qrstream.Settings$ReceivingPreferenceFragment"
+        android:title="@string/pref_header_receiving" />
+
+</preference-headers>

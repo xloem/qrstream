@@ -60,6 +60,14 @@ public class Launcher extends Activity {
                 finish();
             }
         });
+
+	findViewById(R.id.settings_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(v.getContext(), Settings.class);
+		startActivity(intent);
+            }
+        });
     }
 
 
