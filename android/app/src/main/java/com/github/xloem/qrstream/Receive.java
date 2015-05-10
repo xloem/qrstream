@@ -73,7 +73,7 @@ public class Receive extends Activity {
         // TODO: handle if zxing is not installed (AlertDialog is returned rather than null)
         integrator.addExtra("RESULT_DISPLAY_DURATION_MS", Long.valueOf(sharedPref.getString("scan_delay", "0")));
         integrator.addExtra("PROMPT_MESSAGE", "Scan QR Code #" + String.valueOf(index) + " or hit back if done.");
-        integrator.initiateScan(IntentIntegrator.QR_CODE_TYPES);
+        integrator.initiateScan(Arrays.asList("QR_CODE", "AZTEC"));
     }
 
     @Override
