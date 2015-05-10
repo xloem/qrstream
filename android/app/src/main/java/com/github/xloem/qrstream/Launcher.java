@@ -61,11 +61,11 @@ public class Launcher extends Activity {
             }
         });
 
-	findViewById(R.id.settings_button).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.settings_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(v.getContext(), Settings.class);
-		startActivity(intent);
+                startActivity(intent);
             }
         });
     }
@@ -75,52 +75,48 @@ public class Launcher extends Activity {
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
         if (resultCode != Activity.RESULT_OK || intent == null || intent.getData() == null)
             return;
+
         Uri dataUri = intent.getData();
-        String data;
-
-        try {
-            InputStream stream = getContentResolver().openInputStream(dataUri);
-            InputStreamReader reader = new InputStreamReader(stream);
-            int length = stream.available();
-
-            CharBuffer buffer = CharBuffer.allocate(length);
-            while (buffer.hasRemaining()) {
-                reader.read(buffer);
-            }
-            buffer.rewind();
-
-            data = buffer.toString();
-
-        } catch (FileNotFoundException e) {
-            Toast.makeText(getApplicationContext(), "File not found: " + dataUri.toString(), Toast.LENGTH_LONG).show();
-            e.printStackTrace();
-            return;
-        } catch (IOException e) {
-            Toast.makeText(getApplicationContext(), "IO Error: " + dataUri.toString(), Toast.LENGTH_LONG).show();
-            e.printStackTrace();
-            return;
-        }
 
         switch(requestCode) {
-            case REQUEST_CODE_RECEIVE:
-
+        case REQUEST_CODE_RECEIVE:
+            try {
+                InputStream stream = getContentResolver().openInputStream(dataUri);
+                InputStreamReader reader = new InputStreamReader(stream);
+                int length = stream.available();
+    
+                CharBuffer buffer = CharBuffer.allocate(length);
+                while (buffer.hasRemaining()) {
+                    reader.read(buffer);
+                }
+                buffer.rewind();
+    
                 ClipboardManager clip = (ClipboardManager)getApplicationContext().getSystemService(CLIPBOARD_SERVICE);
-                clip.setText(data);
+                clip.setText(buffer.toString());
                 Toast.makeText(getApplicationContext(), "Result in clipboard and " + dataUri.getPath(), Toast.LENGTH_LONG).show();
+    
+            } catch (FileNotFoundException e) {
+                Toast.makeText(getApplicationContext(), "File not found: " + dataUri.toString(), Toast.LENGTH_LONG).show();
+                e.printStackTrace();
+                return;
+            } catch (IOException e) {
+                Toast.makeText(getApplicationContext(), "IO Error: " + e.getMessage() + ": " + dataUri.toString(), Toast.LENGTH_LONG).show();
+                e.printStackTrace();
+                return;
+            }
+            break;
 
-                break;
-            case REQUEST_CODE_FILE:
+        case REQUEST_CODE_FILE:
+            intent = new Intent(this, Send.class);
+            intent.setAction(Intent.ACTION_SEND);
+            intent.putExtra(Intent.EXTRA_STREAM, dataUri);
+            startActivity(intent);
+            break;
 
-                intent = new Intent(this, Send.class);
-                intent.setAction(Intent.ACTION_SEND);
-                intent.putExtra(Intent.EXTRA_TEXT, data);
-                startActivity(intent);
-                break;
-
-            default:
-                finish();
-                break;
+        default:
+            finish();
+            break;
         }
     }
 
-    }
+}

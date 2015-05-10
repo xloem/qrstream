@@ -5,6 +5,7 @@ import com.google.zxing.integration.android.IntentIntegrator;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.DisplayMetrics;
@@ -12,6 +13,9 @@ import android.util.Log;
 import android.view.Display;
 import android.widget.Toast;
 
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
@@ -21,6 +25,7 @@ import java.nio.CharBuffer;
 public class Send extends Activity {
 
     private String data;
+    private Uri uri;
     private Reader dataReader;
     private int offset;
 
@@ -49,6 +54,7 @@ public class Send extends Activity {
         outState.putInt("total", total);
         outState.putInt("offset", offset);
         outState.putString("data", data);
+        outState.putParcelable("uri", uri);
     }
 
     @Override
@@ -82,8 +88,7 @@ public class Send extends Activity {
             offset = 0;
             if (intent.getAction().equals(Intent.ACTION_SEND)) {
                 data = intent.getStringExtra(Intent.EXTRA_TEXT);
-                dataReader = new StringReader(data);
-                dataRemaining = data.length();
+                uri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
             } else {
                 Toast.makeText(getApplicationContext(), "QRStream Send launched with unexpected intent " + intent.getAction(), Toast.LENGTH_LONG).show();
                 setResult(RESULT_CANCELED, getIntent());
@@ -92,19 +97,38 @@ public class Send extends Activity {
             }
         } else {
             data = savedInstanceState.getString("data");
+            uri = savedInstanceState.getParcelable("uri");
             index = savedInstanceState.getInt("index");
             offset = savedInstanceState.getInt("offset");
-            dataReader = new StringReader(data);
-            dataRemaining = data.length() - offset;
-            try {
-                dataReader.skip(offset);
-            } catch(IOException e) {
-                e.printStackTrace();
-                setResult(RESULT_CANCELED, getIntent());
-                finish();
-                return;
-            }
         }
+
+        try {
+
+            if (data != null) {
+                dataReader = new StringReader(data);
+                dataRemaining = data.length();
+            } else {
+                InputStream istream = getContentResolver().openInputStream(uri);
+                dataReader = new InputStreamReader(istream);
+                dataRemaining = istream.available();
+            }
+            dataRemaining -= offset;
+            dataReader.skip(offset);
+
+        } catch (FileNotFoundException e) {
+            Toast.makeText(getApplicationContext(), "File not found: " + String.valueOf(uri), Toast.LENGTH_LONG).show();
+            e.printStackTrace();
+            setResult(RESULT_CANCELED, getIntent());
+            finish();
+            return;
+        } catch (IOException e) {
+            Toast.makeText(getApplicationContext(), "IO Error: " + e.getMessage() + ": " + String.valueOf(uri), Toast.LENGTH_LONG).show();
+            e.printStackTrace();
+            setResult(RESULT_CANCELED, getIntent());
+            finish();
+            return;
+        }
+
         // total number of blocks if we use max size
         total = (dataRemaining - 1) / versionCapacities[version - 1] + 1;
         // use actual average size given total number
