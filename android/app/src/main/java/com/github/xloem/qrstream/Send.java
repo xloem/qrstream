@@ -3,6 +3,8 @@ package com.github.xloem.qrstream;
 import com.google.zxing.integration.android.IntentIntegrator;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -32,6 +34,8 @@ public class Send extends Activity {
     private CharBuffer buffer;
     private int index;
     private int total;
+
+    private boolean waiting;
 
     final private static int[] versionCapacities = {
             17,   32,   53,   78,   106,  134,  154,  192,  230,  271,
@@ -118,14 +122,12 @@ public class Send extends Activity {
         } catch (FileNotFoundException e) {
             Toast.makeText(getApplicationContext(), "File not found: " + String.valueOf(uri), Toast.LENGTH_LONG).show();
             e.printStackTrace();
-            setResult(RESULT_CANCELED, getIntent());
-            finish();
+            cancel();
             return;
         } catch (IOException e) {
             Toast.makeText(getApplicationContext(), "IO Error: " + e.getMessage() + ": " + String.valueOf(uri), Toast.LENGTH_LONG).show();
             e.printStackTrace();
-            setResult(RESULT_CANCELED, getIntent());
-            finish();
+            cancel();
             return;
         }
 
@@ -134,15 +136,51 @@ public class Send extends Activity {
         // use actual average size given total number
         buffer = CharBuffer.allocate((dataRemaining - 1) / total + 1);
 
-        Toast.makeText(getApplicationContext(), "Sending " + String.valueOf(dataRemaining) + " bytes in " + String.valueOf(total) + " QR codes", Toast.LENGTH_SHORT).show();
+        // Warn if there will be a lot of codes to display
+        if (offset == 0
+            && total > Integer.valueOf(sharedPref.getString("warning_threshold", "20")))
+        {
+            waiting = true;
 
-        total += index;
+            AlertDialog.Builder confirmationDialog = new AlertDialog.Builder(this);
+            confirmationDialog.setTitle("Are you sure?");
+            confirmationDialog.setMessage("The current cell size will require " + String.valueOf(total) + " barcodes for this data.  If this is too many you can try decreasing the cell size.");
+            confirmationDialog.setPositiveButton("Continue", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    waiting = false;
+                    writeOne();
+                }
+            });
+            confirmationDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    cancel();
+                }
+
+            });
+            confirmationDialog.show();
+        } else {
+            waiting = false;
+
+            total += index;
+
+            if (offset == 0) {
+                Toast.makeText(getApplicationContext(), "Sending " + String.valueOf(dataRemaining) + " bytes in " + String.valueOf(total) + " QR codes", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        writeOne();
+        if (!waiting)
+            writeOne();
+    }
+
+    private void cancel() {
+        setResult(RESULT_CANCELED, getIntent());
+        finish();
     }
 
     private void writeOne() {
