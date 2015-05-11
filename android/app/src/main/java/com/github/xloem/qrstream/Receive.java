@@ -51,6 +51,8 @@ public class Receive extends Activity {
 
         try {
             tempWriter = new BufferedWriter(new FileWriter(tempFile, true));
+
+            readOne();
         } catch( IOException e) {
             Toast.makeText(getApplicationContext(), "ERROR: Failed to open " + tempFile.getPath(), Toast.LENGTH_LONG).show();
             e.printStackTrace();
@@ -59,14 +61,7 @@ public class Receive extends Activity {
         }
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        readOne();
-    }
-
     private void readOne() {
-
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
 
         IntentIntegrator integrator = new IntentIntegrator(this);
@@ -83,39 +78,38 @@ public class Receive extends Activity {
             if (result.getFormatName() != null) {
                 SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
                 byte[] bytes = result.getRawBytes();
-                if (sharedPref.getBoolean("drop_duplicates", true)
-                    && Arrays.equals(bytes, lastBytes))
+                if (!sharedPref.getBoolean("drop_duplicates", true)
+                    || !Arrays.equals(bytes, lastBytes))
                 {
-                    // rescan of last qr
-                    return;
+                    // not a rescan of last qr
+                    tempWriter.write(result.getContents());
+                    index++;
+                    lastBytes = bytes;
+
                 }
 
-                tempWriter.write(result.getContents());
-                index++;
-                lastBytes = bytes;
-
-                // readOne() will be called in onResume
-                return;
-            }
-
-            // zxing returned without result, done
-
-            tempWriter.close();
-
-            if (tempFile.length() > 0) {
-                Intent aIntent = getIntent();
-                aIntent.setData(Uri.fromFile(tempFile));
-                setResult(RESULT_OK, aIntent);
+                readOne();
             } else {
-                setResult(RESULT_CANCELED, getIntent());
+                // zxing returned without result, done
+    
+                tempWriter.close();
+    
+                if (tempFile.length() > 0) {
+                    Intent aIntent = getIntent();
+                    aIntent.setData(Uri.fromFile(tempFile));
+                    setResult(RESULT_OK, aIntent);
+                } else {
+                    setResult(RESULT_CANCELED, getIntent());
+                }
+                finish();
             }
         } catch (IOException e) {
             Toast.makeText(getApplicationContext(), "ERROR: Failed to write to " + tempFile.getPath(), Toast.LENGTH_LONG).show();
             e.printStackTrace();
 
             setResult(RESULT_CANCELED, getIntent());
+            finish();
         }
 
-        finish();
     }
 }
