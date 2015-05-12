@@ -83,10 +83,9 @@ public class Launcher extends Activity {
             try {
                 InputStream stream = getContentResolver().openInputStream(dataUri);
                 InputStreamReader reader = new InputStreamReader(stream);
-                int length = stream.available();
-    
-                CharBuffer buffer = CharBuffer.allocate(length);
-                while (buffer.hasRemaining()) {
+
+                CharBuffer buffer = CharBuffer.allocate(stream.available());
+                while (reader.ready()) {
                     reader.read(buffer);
                 }
                 buffer.rewind();
