@@ -79,6 +79,7 @@ public class Settings extends PreferenceActivity {
         // their values. When their values change, their summaries are updated
         // to reflect the new value, per the Android Design guidelines.
         bindPreferenceSummaryToValue(findPreference("cell_size"));
+        bindPreferenceSummaryToValue(findPreference("code_format"));
         bindPreferenceSummaryToValue(findPreference("scan_delay"));
     }
 
@@ -207,6 +208,7 @@ public class Settings extends PreferenceActivity {
             // to their values. When their values change, their summaries are
             // updated to reflect the new value, per the Android Design
             // guidelines.
+            bindPreferenceSummaryToValue(findPreference("code_format"));
             bindPreferenceSummaryToValue(findPreference("cell_size"));
         }
     }

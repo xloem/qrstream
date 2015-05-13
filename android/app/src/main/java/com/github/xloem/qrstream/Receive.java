@@ -71,7 +71,7 @@ public class Receive extends Activity {
 
         IntentIntegrator integrator = new IntentIntegrator(this);
         integrator.addExtra("RESULT_DISPLAY_DURATION_MS", Long.valueOf(sharedPref.getString("scan_delay", "0")));
-        integrator.addExtra("PROMPT_MESSAGE", "Scan QR Code #" + String.valueOf(index) + " or hit back if done.");
+        integrator.addExtra("PROMPT_MESSAGE", "Scan Code #" + String.valueOf(index) + " or hit back if done.");
 
         if(integrator.initiateScan(Arrays.asList("QR_CODE", "AZTEC")) != null) {
 
@@ -88,10 +88,12 @@ public class Receive extends Activity {
             if (result.getFormatName() != null) {
                 SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
                 byte[] bytes = result.getRawBytes();
+                if (bytes == null)
+                    bytes = result.getContents().getBytes("ISO-8859-1");
                 if (!sharedPref.getBoolean("drop_duplicates", true)
                     || !Arrays.equals(bytes, lastBytes))
                 {
-                    // not a rescan of last qr
+                    // not a rescan of last code
                     lastBytes = bytes;
 
                     // If this is a single blob of bytes, preserve binary data.

@@ -14,6 +14,16 @@
 
     <string name="pref_title_cell_size">Minimum cell size (&#xB5;m)</string>
 
+    <string name="pref_title_code_format">Barcode Format</string>
+    <string-array name="pref_code_format_titles">
+            <item>QR Code</item>
+            <item>Aztec Code</item>
+    </string-array>
+    <string-array name="pref_code_format_values">
+        <item>QR_CODE</item>
+        <item>AZTEC</item>
+    </string-array>
+
     <string name="pref_ringtone_silent">Silent</string>
 
 </resources>

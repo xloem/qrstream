@@ -6,4 +6,13 @@
         android:defaultValue="640"
         android:inputType="number" />
 
+    <ListPreference
+        android:key="code_format"
+        android:title="@string/pref_title_code_format"
+        android:defaultValue="QR_CODE"
+        android:entries="@array/pref_code_format_titles"
+        android:entryValues="@array/pref_code_format_values"
+        android:negativeButtonText="@null"
+        android:positiveButtonText="@null" />
+
 </PreferenceScreen>

@@ -35,21 +35,9 @@ public class Send extends Activity {
     private int index;
     private int total;
 
+    private String codeFormat;
+
     private boolean waiting;
-
-    final private static int[] versionCapacities = {
-            17,   32,   53,   78,   106,  134,  154,  192,  230,  271,
-            321,  367,  425,  458,  520,  586,  644,  718,  792,  858,
-            929,  1003, 1091, 1171, 1273, 1367, 1465, 1528, 1628, 1732,
-            1840, 1952, 2068, 2188, 2303, 2431, 2563, 2699, 2809, 2953
-    };
-
-    final private static int[] versionSizes = {
-            21,   25,  29,  33,  37,  41,  45,  49,  53,  57,
-            61,   65,  69,  73,  77,  81,  85,  89,  93,  97,
-            101, 105, 109, 113, 117, 121, 125, 129, 133, 137,
-            141, 145, 149, 153, 157, 161, 165, 169, 173, 177
-    };
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
@@ -67,8 +55,11 @@ public class Send extends Activity {
 
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
 
-        // Guess the max QR code size given a target QR cell size
+        codeFormat = sharedPref.getString("code_format", "QR_CODE");
+
+        // Guess the max barcode capacity given a target cell size
         float minCellMicrometers = Float.valueOf(sharedPref.getString("cell_size", "640"));
+        int codeCapacity;
 
         Display display = getWindowManager().getDefaultDisplay();
         DisplayMetrics metrics = getResources().getDisplayMetrics();
@@ -76,13 +67,14 @@ public class Send extends Activity {
         float displayHeight = display.getHeight() / metrics.ydpi;
         float displayInches = displayWidth < displayHeight ? displayWidth : displayHeight;
 
-        displayInches *= 0.625; // guesstimate at qrcode display % of display width
-        float maxSize = displayInches * 25400 / minCellMicrometers;
+        // TODO: this number is far too low for how my phone displayed an aztec code
+        displayInches *= 0.625; // guesstimate at zxing display % of display width
+        int maxSize = (int)(displayInches * 25400f / minCellMicrometers);
 
-        int version;
-        for (version = 0; version < versionSizes.length; ++ version)
-            if (versionSizes[version] > maxSize)
-                break;
+        if (codeFormat == "AZTEC")
+            codeCapacity = Metrics.aztecCapacity(maxSize);
+        else
+            codeCapacity = Metrics.qrcodeCapacity(maxSize);
 
         int dataRemaining;
 
@@ -132,7 +124,7 @@ public class Send extends Activity {
         }
 
         // total number of blocks if we use max size
-        total = (dataRemaining - 1) / versionCapacities[version - 1] + 1;
+        total = (dataRemaining - 1) / codeCapacity + 1;
         // use actual average size given total number
         buffer = CharBuffer.allocate((dataRemaining - 1) / total + 1);
 
@@ -166,7 +158,7 @@ public class Send extends Activity {
             total += index;
 
             if (offset == 0) {
-                Toast.makeText(getApplicationContext(), "Sending " + String.valueOf(dataRemaining) + " bytes in " + String.valueOf(total) + " QR codes", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Sending " + String.valueOf(dataRemaining) + " bytes in " + String.valueOf(total) + " codes", Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -203,6 +195,7 @@ public class Send extends Activity {
             integrator.addExtra("ENCODE_SHOW_CONTENTS", false);
             buffer.rewind();
             buffer.limit(len);
+            integrator.addExtra("ENCODE_FORMAT", codeFormat);
             if (integrator.shareText(buffer) != null)
                 // zxing not installed
                 cancel();
