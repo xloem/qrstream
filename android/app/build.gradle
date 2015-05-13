@@ -8,8 +8,8 @@ android {
         applicationId "com.github.xloem.qrstream"
         minSdkVersion 8
         targetSdkVersion 22
-        versionCode 5
-        versionName "1.04"
+        versionCode 6
+        versionName "1.1.0"
     }
     buildTypes {
         release {
