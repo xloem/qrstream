@@ -31,8 +31,16 @@ public class Receive extends Activity {
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putInt("index", index);
-        outState.putByteArray("lastBytes", lastBytes);
+        try {
+            tempWriter.flush();
+            outState.putInt("index", index);
+            outState.putByteArray("lastBytes", lastBytes);
+        } catch( IOException e) {
+            Toast.makeText(getApplicationContext(), "ERROR: Failed to flush data to " + tempFile.getPath(), Toast.LENGTH_LONG).show();
+            e.printStackTrace();
+            setResult(RESULT_CANCELED, getIntent());
+            finish();
+        }
     }
 
     @Override
@@ -45,6 +53,8 @@ public class Receive extends Activity {
             index = 1;
             lastBytes = null;
             tempFile.delete();
+
+            readOne();
         } else {
             index = savedInstanceState.getInt("index");
             lastBytes = savedInstanceState.getByteArray("lastBytes");
@@ -56,8 +66,6 @@ public class Receive extends Activity {
                             new FileOutputStream(tempFile, true),
                             "ISO-8859-1"
                     ));
-
-            readOne();
         } catch( IOException e) {
             Toast.makeText(getApplicationContext(), "ERROR: Failed to open " + tempFile.getPath(), Toast.LENGTH_LONG).show();
             e.printStackTrace();
