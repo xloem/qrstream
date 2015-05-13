@@ -67,14 +67,14 @@ public class Send extends Activity {
         float displayHeight = display.getHeight() / metrics.ydpi;
         float displayInches = displayWidth < displayHeight ? displayWidth : displayHeight;
 
-        // TODO: this number is far too low for how my phone displayed an aztec code
-        displayInches *= 0.625; // guesstimate at zxing display % of display width
+        displayInches *= 0.82; // guesstimate at zxing display % of display width
         int maxSize = (int)(displayInches * 25400f / minCellMicrometers);
 
         if (codeFormat == "AZTEC")
             codeCapacity = Metrics.aztecCapacity(maxSize);
         else
-            codeCapacity = Metrics.qrcodeCapacity(maxSize);
+            // zxing adds a 4 cell quiet zone on each side of a QR code
+            codeCapacity = Metrics.qrcodeCapacity(maxSize - 8);
 
         int dataRemaining;
 
