@@ -113,7 +113,7 @@ public class Send extends Activity {
                 dataRemaining = data.length();
             } else {
                 InputStream istream = getContentResolver().openInputStream(uri);
-                dataReader = new InputStreamReader(istream);
+                dataReader = new InputStreamReader(istream, "ISO-8859-1");
                 dataRemaining = istream.available();
             }
             dataRemaining -= offset;
@@ -192,8 +192,7 @@ public class Send extends Activity {
         } catch (IOException e) {
             Toast.makeText(getApplicationContext(), "IOException " + e.getMessage(), Toast.LENGTH_LONG).show();
             e.printStackTrace();
-            setResult(RESULT_CANCELED, getIntent());
-            finish();
+            cancel();
             return;
         }
         if (len > 0) {
@@ -201,11 +200,12 @@ public class Send extends Activity {
             offset += len;
 
             IntentIntegrator integrator = new IntentIntegrator(this);
-            // TODO: handle if zxing is not installed (AlertDialog is returned rather than null)
             integrator.addExtra("ENCODE_SHOW_CONTENTS", false);
             buffer.rewind();
             buffer.limit(len);
-            integrator.shareText(buffer);
+            if (integrator.shareText(buffer) != null)
+                // zxing not installed
+                cancel();
         } else {
             setResult(RESULT_OK, getIntent());
             finish();

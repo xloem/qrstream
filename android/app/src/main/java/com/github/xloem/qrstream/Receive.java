@@ -14,8 +14,9 @@ import android.widget.Toast;
 
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.util.Arrays;
 
 
@@ -38,7 +39,7 @@ public class Receive extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        tempFile = new File(getApplicationContext().getExternalCacheDir(), "qrstream.txt");
+        tempFile = new File(getApplicationContext().getExternalCacheDir(), "qrstream");
 
         if (savedInstanceState == null) {
             index = 1;
@@ -50,7 +51,11 @@ public class Receive extends Activity {
         }
 
         try {
-            tempWriter = new BufferedWriter(new FileWriter(tempFile, true));
+            tempWriter = new BufferedWriter(
+                    new OutputStreamWriter(
+                            new FileOutputStream(tempFile, true),
+                            "ISO-8859-1"
+                    ));
 
             readOne();
         } catch( IOException e) {
@@ -65,10 +70,15 @@ public class Receive extends Activity {
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
 
         IntentIntegrator integrator = new IntentIntegrator(this);
-        // TODO: handle if zxing is not installed (AlertDialog is returned rather than null)
         integrator.addExtra("RESULT_DISPLAY_DURATION_MS", Long.valueOf(sharedPref.getString("scan_delay", "0")));
         integrator.addExtra("PROMPT_MESSAGE", "Scan QR Code #" + String.valueOf(index) + " or hit back if done.");
-        integrator.initiateScan(Arrays.asList("QR_CODE", "AZTEC"));
+
+        if(integrator.initiateScan(Arrays.asList("QR_CODE", "AZTEC")) != null) {
+
+            // zxing not installed
+            setResult(RESULT_CANCELED, getIntent());
+            finish();
+        }
     }
 
     @Override
@@ -82,9 +92,16 @@ public class Receive extends Activity {
                     || !Arrays.equals(bytes, lastBytes))
                 {
                     // not a rescan of last qr
-                    tempWriter.write(result.getContents());
-                    index++;
                     lastBytes = bytes;
+
+                    // If this is a single blob of bytes, preserve binary data.
+                    bytes = intent.getByteArrayExtra("SCAN_RESULT_BYTE_SEGMENTS_0");
+                    if (bytes != null && intent.getByteArrayExtra("SCAN_RESULT_BYTE_SEGMENTS_1") == null) {
+                        tempWriter.write(new String(bytes, "ISO-8859-1"));
+                    } else {
+                        tempWriter.write(result.getContents());
+                    }
+                    index++;
 
                 }
 

@@ -40,7 +40,7 @@ public class Launcher extends Activity {
             public void onClick(View v) {
                 Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
                 intent.addCategory(Intent.CATEGORY_OPENABLE);
-                intent.setType("text/plain");
+                intent.setType("*/*");
                 startActivityForResult(intent, REQUEST_CODE_FILE);
             }
         });
