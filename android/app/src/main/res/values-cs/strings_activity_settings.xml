@@ -1,0 +1,29 @@
+<resources>
+        <string name="title_activity_settings">Nastavení</string>
+
+    <!-- Strings related to Settings -->
+
+    <string name="pref_header_receiving">Příjem</string>
+    
+    <string name="pref_title_drop_duplicates">Zahazovat duplikáty</string>
+    <string name="pref_description_drop_duplicates">Ignorovat opakované skeny stejných kódů.</string>
+
+    <string name="pref_title_scan_delay">Zpoždění skenování (ms)</string>
+
+    <string name="pref_header_sending">Odesílám</string>
+
+    <string name="pref_title_cell_size">Minimální velikost (&#xB5;m)</string>
+
+    <string name="pref_title_code_format">Formát čárového kódu</string>
+    <string-array name="pref_code_format_titles">
+            <item>QR kód</item>
+            <item>Aztec kód</item>
+    </string-array>
+    <string-array name="pref_code_format_values">
+        <item>QR_CODE</item>
+        <item>AZTEC</item>
+    </string-array>
+
+    <string name="pref_ringtone_silent">Tiché</string>
+
+</resources>
