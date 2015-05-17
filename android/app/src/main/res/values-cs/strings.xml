@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">QRStream</string>
+    <string name="launcher_receive">Přijmout QR Stream...</string>
+    <string name="launcher_send_file">Odeslat soubor</string>
+    <string name="launcher_send_clipboard">Odeslat obsah schránky</string>
+    <string name="launcher_settings">Nastavení...</string>
+
+</resources>
