@@ -70,7 +70,7 @@ public class Send extends Activity {
         displayInches *= 0.82; // guesstimate at zxing display % of display width
         int maxSize = (int)(displayInches * 25400f / minCellMicrometers);
 
-        if (codeFormat == "AZTEC")
+        if ("AZTEC".equals(codeFormat))
             codeCapacity = Metrics.aztecCapacity(maxSize);
         else
             // zxing adds a 4 cell quiet zone on each side of a QR code
