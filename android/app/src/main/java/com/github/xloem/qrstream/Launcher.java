@@ -50,7 +50,7 @@ public class Launcher extends Activity {
             public void onClick(View v) {
                 ClipboardManager clip = (ClipboardManager)v.getContext().getSystemService(CLIPBOARD_SERVICE);
                 if (!clip.hasText()) {
-                    Toast.makeText(getApplicationContext(), "Found nothing in clipboard.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), getString(R.string.except_clipboard_empty), Toast.LENGTH_SHORT).show();
                     return;
                 }
                 Intent intent = new Intent(v.getContext(), Send.class);
@@ -92,14 +92,14 @@ public class Launcher extends Activity {
     
                 ClipboardManager clip = (ClipboardManager)getApplicationContext().getSystemService(CLIPBOARD_SERVICE);
                 clip.setText(buffer.toString());
-                Toast.makeText(getApplicationContext(), "Result in clipboard and " + dataUri.getPath(), Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), String.format(getString(R.string.launcher_result_clip_path), dataUri.getPath()), Toast.LENGTH_LONG).show();
     
             } catch (FileNotFoundException e) {
-                Toast.makeText(getApplicationContext(), "File not found: " + dataUri.toString(), Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), String.format(getString(R.string.except_file_not_found), dataUri.toString()), Toast.LENGTH_LONG).show();
                 e.printStackTrace();
                 return;
             } catch (IOException e) {
-                Toast.makeText(getApplicationContext(), "IO Error: " + e.getMessage() + ": " + dataUri.toString(), Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), String.format(getString(R.string.except_io), e.getMessage(), dataUri.toString()), Toast.LENGTH_LONG).show();
                 e.printStackTrace();
                 return;
             }

@@ -36,7 +36,7 @@ public class Receive extends Activity {
             outState.putInt("index", index);
             outState.putByteArray("lastBytes", lastBytes);
         } catch( IOException e) {
-            Toast.makeText(getApplicationContext(), "ERROR: Failed to flush data to " + tempFile.getPath(), Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), String.format(getString(R.string.except_io), e.getMessage(), tempFile.getPath()), Toast.LENGTH_LONG).show();
             e.printStackTrace();
             setResult(RESULT_CANCELED, getIntent());
             finish();
@@ -67,7 +67,7 @@ public class Receive extends Activity {
                             "ISO-8859-1"
                     ));
         } catch( IOException e) {
-            Toast.makeText(getApplicationContext(), "ERROR: Failed to open " + tempFile.getPath(), Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), String.format(getString(R.string.except_io), e.getMessage(), tempFile.getPath()), Toast.LENGTH_LONG).show();
             e.printStackTrace();
             setResult(RESULT_CANCELED, getIntent());
             finish();
@@ -79,7 +79,7 @@ public class Receive extends Activity {
 
         IntentIntegrator integrator = new IntentIntegrator(this);
         integrator.addExtra("RESULT_DISPLAY_DURATION_MS", Long.valueOf(sharedPref.getString("scan_delay", "0")));
-        integrator.addExtra("PROMPT_MESSAGE", "Scan Code #" + String.valueOf(index) + " or hit back if done.");
+        integrator.addExtra("PROMPT_MESSAGE", String.format(getString(R.string.receive_zxing_prompt), index));
 
         if(integrator.initiateScan(Arrays.asList("QR_CODE", "AZTEC")) != null) {
 
@@ -131,7 +131,7 @@ public class Receive extends Activity {
                 finish();
             }
         } catch (IOException e) {
-            Toast.makeText(getApplicationContext(), "ERROR: Failed to write to " + tempFile.getPath(), Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), String.format(getString(R.string.except_io), e.getMessage(), tempFile.getPath()), Toast.LENGTH_LONG).show();
             e.printStackTrace();
 
             setResult(RESULT_CANCELED, getIntent());

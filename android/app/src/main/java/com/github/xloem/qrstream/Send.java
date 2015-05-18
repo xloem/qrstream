@@ -86,7 +86,7 @@ public class Send extends Activity {
                 data = intent.getStringExtra(Intent.EXTRA_TEXT);
                 uri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
             } else {
-                Toast.makeText(getApplicationContext(), "QRStream Send launched with unexpected intent " + intent.getAction(), Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), String.format(getString(R.string.except_unexpected_intent), getString(R.string.app_name) + " Send", intent.getAction()), Toast.LENGTH_LONG).show();
                 setResult(RESULT_CANCELED, getIntent());
                 finish();
                 return;
@@ -112,12 +112,12 @@ public class Send extends Activity {
             dataReader.skip(offset);
 
         } catch (FileNotFoundException e) {
-            Toast.makeText(getApplicationContext(), "File not found: " + String.valueOf(uri), Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), String.format(getString(R.string.except_file_not_found), String.valueOf(uri)), Toast.LENGTH_LONG).show();
             e.printStackTrace();
             cancel();
             return;
         } catch (IOException e) {
-            Toast.makeText(getApplicationContext(), "IO Error: " + e.getMessage() + ": " + String.valueOf(uri), Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), String.format(getString(R.string.except_io), e.getMessage(), String.valueOf(uri)), Toast.LENGTH_LONG).show();
             e.printStackTrace();
             cancel();
             return;
@@ -135,16 +135,16 @@ public class Send extends Activity {
             waiting = true;
 
             AlertDialog.Builder confirmationDialog = new AlertDialog.Builder(this);
-            confirmationDialog.setTitle("Are you sure?");
-            confirmationDialog.setMessage("The current cell size will require " + String.valueOf(total) + " barcodes for this data.  If this is too many you can try decreasing the cell size.");
-            confirmationDialog.setPositiveButton("Continue", new DialogInterface.OnClickListener() {
+            confirmationDialog.setTitle(getString(R.string.send_confirm_title));
+            confirmationDialog.setMessage(String.format(getString(R.string.send_confirm_message), total));
+            confirmationDialog.setPositiveButton(getString(R.string.send_confirm_positive), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
                     waiting = false;
                     writeOne();
                 }
             });
-            confirmationDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            confirmationDialog.setNegativeButton(getString(R.string.send_confirm_negative), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
                     cancel();
@@ -158,7 +158,7 @@ public class Send extends Activity {
             total += index;
 
             if (offset == 0) {
-                Toast.makeText(getApplicationContext(), "Sending " + String.valueOf(dataRemaining) + " bytes in " + String.valueOf(total) + " codes", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), String.format(getString(R.string.send_sending_summary), dataRemaining, total), Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -182,7 +182,7 @@ public class Send extends Activity {
             buffer.limit(buffer.capacity());
             len = dataReader.read(buffer);
         } catch (IOException e) {
-            Toast.makeText(getApplicationContext(), "IOException " + e.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), String.format(getString(R.string.except_io), e.getMessage(), ""), Toast.LENGTH_LONG).show();
             e.printStackTrace();
             cancel();
             return;

@@ -6,5 +6,17 @@
     <string name="launcher_send_file">Send File</string>
     <string name="launcher_send_clipboard">Send Clipboard</string>
     <string name="launcher_settings">Settings...</string>
+    <string name="launcher_result_clip_path">Result in clipboard and %s</string>
+    <string name="send_confirm_title">Are you sure?</string>
+    <string name="send_confirm_message">The current cell size will require %d barcodes for this data.  If this is too many you can try decreasing the cell size.</string>
+    <string name="send_confirm_positive">Continue</string>
+    <string name="send_confirm_negative">Cancel</string>
+    <string name="send_sending_summary">Sending %1$d bytes in %2$d codes</string>
+    <string name="receive_zxing_prompt">Scan code #%d or hit back if done.</string>
+
+    <string name="except_clipboard_empty">Found nothing in clipboard.</string>
+    <string name="except_file_not_found">File not found: %s</string>
+    <string name="except_io">IO Error: %1$s: %2$s</string>
+    <string name="except_unexpected_intent">%1$s launched with unexepected intent %2$s</string>
 
 </resources>
