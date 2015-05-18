@@ -34,15 +34,67 @@ public class Metrics {
         121, 125, 131, 135, 139, 143, 147, 151
     };
 
-    // from http://www.barcodephp.com/en/aztec/technical
-    // TODO: is this inaccurate if zxing uses a different error correction %?
+/*
+# AZTEC_LAYERS_CAPACITY generated with this rough python script
+
+from math import floor, ceil
+
+def getCapacity(layers, compact):
+    if layers < 3:
+        wordSize = 6
+    elif layers < 9:
+        wordSize = 8
+    elif layers < 23:
+        wordSize = 10
+    else:
+        wordSize = 12
+
+    # total bits in aztec code
+    if compact:
+        capacity = 88
+    else:
+        capacity = 112
+    capacity = (capacity + 16 * layers) * layers
+    if compact and capacity > wordSize * 64:
+        capacity = wordSize * 64
+    else:
+        capacity -= capacity % wordSize
+
+    # brute force unstuff bits and remove ECC bits, zxing uses 33%
+    for unstuffedBits in xrange(capacity):
+        if wordSize * ceil(unstuffedBits * 1.0 / (wordSize - 1)) + floor(unstuffedBits * 33.0 / 100) + 11 > capacity:
+            break
+    capacity = unstuffedBits - 1
+
+    # account for binary shift cruft
+    bigshifts = capacity / (2078*8 + 21)
+    remaining = capacity % (2078*8 + 21)
+    # capacity is now in BYTES
+    capacity = bigshifts * 2078
+    if remaining >= (63*8 + 21):
+        capacity += (remaining - 21) / 8
+    elif remaining >= (32*8 + 20):
+        capacity += min((remaining - 20) / 8, 62) # two extra small shifts
+    else:
+        capacity += min((remaining - 10) / 8, 31) # one extra small shift
+
+    return capacity
+
+for a in range(33):
+    if a < 4:
+        layers = a + 1
+        compact = True
+    else:
+        layers = a
+        compact = False
+    print getCapacity(layers, compact), ",",
+ */
     final private static int[] AZTEC_LAYERS_CAPACITY = {
-        6,    19,   33,   89, // [0,1,2,3] = compact[1,2,3,4]
-        // [4,...] = normal[4,...]
-                          62,   87,   114,  145,  179,
-        214,  256,  298,  343,  394,  446,  502,  559,
-        621,  687,  753,  824,  898,  976,  1056, 1138,
-        1224, 1314, 1407, 1501, 1600, 1702, 1806, 1914,  
+        6,    17,   31,   39,
+                          56,   77,   102,  129,  159,
+        195 , 232 , 270 , 311 , 357 , 403 , 454 , 505 ,
+        561 , 620 , 681 , 745 , 811 , 880 , 966 , 1043 ,
+        1120, 1203, 1288, 1375, 1465, 1558, 1652, 1752
     };
 
     public static int aztecCapacity(int dimension) {
