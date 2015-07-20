@@ -67,7 +67,7 @@ public class Send extends Activity {
         float displayHeight = display.getHeight() / metrics.ydpi;
         float displayInches = displayWidth < displayHeight ? displayWidth : displayHeight;
 
-        displayInches *= 0.82; // guesstimate at zxing display % of display width
+        displayInches = displayInches * 7 / 8;
         int maxSize = (int)(displayInches * 25400f / minCellMicrometers);
 
         if ("AZTEC".equals(codeFormat))
