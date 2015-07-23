@@ -7,10 +7,8 @@
     <string name="launcher_send_clipboard">Send Clipboard</string>
     <string name="launcher_settings">Settings...</string>
     <string name="launcher_result_clip_path">Result in clipboard and %s</string>
-    <string name="send_confirm_title">Are you sure?</string>
-    <string name="send_confirm_message">The current cell size will require %d barcodes for this data.  If this is too many you can try decreasing the cell size.</string>
-    <string name="send_confirm_positive">Continue</string>
-    <string name="send_confirm_negative">Cancel</string>
+    <string name="send_code_label">#%1$d/%2$d blocksize=%3$d offset=%4$d</string>
+    <string name="send_instructions">Next: tap Camera, Search, or Call.</string>
     <string name="send_sending_summary">Sending %1$d bytes in %2$d codes</string>
     <string name="receive_zxing_prompt">Scan code #%d or hit back if done.</string>
 

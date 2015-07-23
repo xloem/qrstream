@@ -2,14 +2,17 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 22
-    buildToolsVersion "22.0.1"
+    buildToolsVersion '22.0.1'
 
     defaultConfig {
         applicationId "com.github.xloem.qrstream"
-        minSdkVersion 8
+        // zxing core uses core java functions introduced in sdk 9
+        // we want to be able to use future zxing core so we can process e.g. aztec well
+        // set to 10 because there is no sdk 9 available
+        minSdkVersion 10
         targetSdkVersion 22
-        versionCode 6
-        versionName "1.1.0"
+        versionCode 7
+        versionName "1.1.1"
     }
     lintOptions {
         warning 'MissingTranslation'
@@ -24,6 +27,6 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    //compile 'com.google.zxing:core:3.+'
+    compile 'com.google.zxing:core:3.+'
     compile 'com.google.zxing:android-integration:3.+'
 }
