@@ -87,18 +87,21 @@ public class Send extends Activity {
         }
         bitmap = Bitmap.createBitmap(displaySize, displaySize, Bitmap.Config.ARGB_8888);
 
+
         // Guess the max barcode capacity given a target cell size
         float minCellMicrometers = Float.valueOf(sharedPref.getString("cell_size", "640"));
         int codeSize = (int)(displayInches * 25400f / minCellMicrometers);
-        int codeCapacity;
-        if (codeFormat == BarcodeFormat.AZTEC) {
-            codeCapacity = Metrics.aztecCapacity(codeSize);
-        } else {
+
+        if (codeFormat == BarcodeFormat.QR_CODE) {
             // we specify a 2-cell margin on all sides
             // TODO: make this a preference
             hints.put(EncodeHintType.MARGIN, 2);
-            codeCapacity = Metrics.qrcodeCapacity(codeSize - 4);
+            codeSize -= 4;
         }
+
+        CodeMetric metric = CodeMetric.create(codeFormat);
+        metric.setDimension(codeSize);
+        int codeCapacity = metric.getCapacity();
 
         int dataRemaining;
 
