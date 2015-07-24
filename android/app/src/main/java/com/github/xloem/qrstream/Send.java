@@ -171,15 +171,14 @@ public class Send extends Activity {
 
     @Override
     public boolean onKeyDown(int code, KeyEvent event) {
-        if (super.onKeyDown(code, event))
-            return true;
         if (code == KeyEvent.KEYCODE_CAMERA
-                || code == KeyEvent.KEYCODE_SEARCH
-                || code == KeyEvent.KEYCODE_CALL) {
+                || code == KeyEvent.KEYCODE_MENU) {
             readOne();
             writeOne();
             return true;
         }
+        if (super.onKeyDown(code, event))
+            return true;
         return false;
     }
 
