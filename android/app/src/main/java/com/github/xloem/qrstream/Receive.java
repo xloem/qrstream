@@ -5,6 +5,8 @@ import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -81,11 +83,18 @@ public class Receive extends Activity {
         integrator.addExtra("RESULT_DISPLAY_DURATION_MS", Long.valueOf(sharedPref.getString("scan_delay", "0")));
         integrator.addExtra("PROMPT_MESSAGE", String.format(getString(R.string.receive_zxing_prompt), index));
 
-        if(integrator.initiateScan(Arrays.asList("QR_CODE", "AZTEC")) != null) {
-
+        AlertDialog barcodeScannerPrompt =
+                   integrator.initiateScan(Arrays.asList("QR_CODE", "AZTEC"));
+        if (barcodeScannerPrompt != null) {
             // zxing not installed
-            setResult(RESULT_CANCELED, getIntent());
-            finish();
+
+            barcodeScannerPrompt.setButton(DialogInterface.BUTTON_NEGATIVE, null, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    setResult(RESULT_CANCELED, getIntent());
+                    finish();
+                }
+            });
         }
     }
 
