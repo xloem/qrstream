@@ -57,7 +57,6 @@ public class Launcher extends Activity {
                 intent.setAction(Intent.ACTION_SEND);
                 intent.putExtra(Intent.EXTRA_TEXT, clip.getText().toString());
                 startActivity(intent);
-                finish();
             }
         });
 
