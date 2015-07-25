@@ -115,7 +115,10 @@ public class Receive extends Activity {
 
                     // If this is a single blob of bytes, preserve binary data.
                     bytes = intent.getByteArrayExtra("SCAN_RESULT_BYTE_SEGMENTS_0");
-                    if (bytes != null && intent.getByteArrayExtra("SCAN_RESULT_BYTE_SEGMENTS_1") == null) {
+                    if (bytes != null &&
+                            intent.getByteArrayExtra("SCAN_RESULT_BYTE_SEGMENTS_1") == null &&
+                            bytes.length >= result.getContents().length())
+                    {
                         tempWriter.write(new String(bytes, "ISO-8859-1"));
                     } else {
                         tempWriter.write(result.getContents());
