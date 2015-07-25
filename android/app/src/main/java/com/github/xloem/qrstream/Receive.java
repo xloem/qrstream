@@ -82,6 +82,7 @@ public class Receive extends Activity {
         IntentIntegrator integrator = new IntentIntegrator(this);
         integrator.addExtra("RESULT_DISPLAY_DURATION_MS", Long.valueOf(sharedPref.getString("scan_delay", "0")));
         integrator.addExtra("PROMPT_MESSAGE", String.format(getString(R.string.receive_zxing_prompt), index));
+        integrator.addExtra("CHARACTER_SET", "ISO-8859-1");
 
         AlertDialog barcodeScannerPrompt =
                    integrator.initiateScan(Arrays.asList("QR_CODE", "AZTEC"));
@@ -113,18 +114,9 @@ public class Receive extends Activity {
                     // not a rescan of last code
                     lastBytes = bytes;
 
-                    // If this is a single blob of bytes, preserve binary data.
-                    bytes = intent.getByteArrayExtra("SCAN_RESULT_BYTE_SEGMENTS_0");
-                    if (bytes != null &&
-                            intent.getByteArrayExtra("SCAN_RESULT_BYTE_SEGMENTS_1") == null &&
-                            bytes.length >= result.getContents().length())
-                    {
-                        tempWriter.write(new String(bytes, "ISO-8859-1"));
-                    } else {
-                        tempWriter.write(result.getContents());
-                    }
-                    index++;
+                    tempWriter.write(result.getContents());
 
+                    index++;
                 }
 
                 readOne();
