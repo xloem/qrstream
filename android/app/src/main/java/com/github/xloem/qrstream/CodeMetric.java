@@ -2,7 +2,7 @@ package com.github.xloem.qrstream;
 
 import com.google.zxing.BarcodeFormat;
 
-// TODO: Add Error Correction Level, Margin
+// TODO: Add Error Correction Level
 
 public abstract class CodeMetric {
 
@@ -14,6 +14,9 @@ public abstract class CodeMetric {
 
     // Maximum number of bytes this size can promise to hold
     protected int capacity;
+
+    // Quiet zone displayed around the code
+    private int margin;
 
 
     // Accessors for the index
@@ -27,6 +30,8 @@ public abstract class CodeMetric {
         int idx = getIndex();
         if (idx < getMaxIndex())
             setIndex(idx + 1);
+        else
+            throw new IndexOutOfBoundsException();
     }
 
     // Incrementally decrease size
@@ -34,16 +39,20 @@ public abstract class CodeMetric {
         int idx = getIndex();
         if (idx > getMinIndex())
             setIndex(idx - 1);
+        else
+            throw new IndexOutOfBoundsException();
     }
 
 
     // Accessors for the dimension
-    public int getDimension() { return dimension; }
+    public int getDimension() { return dimension + margin * 2; }
 
     // Set to the largest values that give an equal or smaller dimension
     public void setDimension(int dimension) {
         setIndex(getMaxIndex());
         int minIndex = getMinIndex();
+
+        dimension -= margin * 2;
 
         while (this.dimension > dimension && index > minIndex) {
             setIndex(index - 1);
@@ -63,6 +72,14 @@ public abstract class CodeMetric {
             setIndex(index + 1);
         }
     }
+
+
+    // Accessors for the margin
+    // Note that changing the margin will change the dimension !!
+    // TODO: should this shrink the barcode to have the same dimension?
+    public int getMargin() { return margin; }
+    public void setMargin(int margin) { this.margin = margin; }
+
 
     // Construct given a BarcodeFormat
     public static CodeMetric create(BarcodeFormat format) {

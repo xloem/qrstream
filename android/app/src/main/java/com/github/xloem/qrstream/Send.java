@@ -21,6 +21,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -39,14 +40,19 @@ public class Send extends Activity {
     private Reader dataReader;
     private int offset;
 
+    private int remaining;
     private CharBuffer buffer;
     private int index;
     private int total;
 
     private BarcodeFormat codeFormat;
     Map<EncodeHintType,Object> hints;
+    private CodeMetric codeMetric;
     private int displaySize;
+    private float displayInches;
     private Bitmap bitmap;
+
+    SharedPreferences sharedPref;
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
@@ -63,19 +69,24 @@ public class Send extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_send);
 
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-
-        codeFormat = BarcodeFormat.valueOf(sharedPref.getString("code_format", "QR_CODE"));
+        sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
 
         hints = new EnumMap<EncodeHintType,Object>(EncodeHintType.class);
         hints.put(EncodeHintType.CHARACTER_SET, "ISO-8859-1");
+        codeFormat = BarcodeFormat.valueOf(sharedPref.getString("code_format", "QR_CODE"));
+        codeMetric = CodeMetric.create(codeFormat);
+        if (codeFormat == BarcodeFormat.QR_CODE) {
+            // we specify a 2-cell margin on all sides
+            // TODO: make this a preference
+            codeMetric.setMargin(2);
+            hints.put(EncodeHintType.MARGIN, codeMetric.getMargin());
+        }
 
         LinearLayout rootLayout = (LinearLayout) findViewById(R.id.root_layout);
         Display display = getWindowManager().getDefaultDisplay();
         DisplayMetrics metrics = getResources().getDisplayMetrics();
         int displayWidth = display.getWidth();
         int displayHeight = display.getHeight();
-        float displayInches;
         if (displayWidth < displayHeight) {
             displayInches = displayWidth / metrics.xdpi;
             displaySize = displayWidth;
@@ -86,24 +97,6 @@ public class Send extends Activity {
             rootLayout.setOrientation(LinearLayout.HORIZONTAL);
         }
         bitmap = Bitmap.createBitmap(displaySize, displaySize, Bitmap.Config.ARGB_8888);
-
-
-        // Guess the max barcode capacity given a target cell size
-        float minCellMicrometers = Float.valueOf(sharedPref.getString("cell_size", "640"));
-        int codeSize = (int)(displayInches * 25400f / minCellMicrometers);
-
-        if (codeFormat == BarcodeFormat.QR_CODE) {
-            // we specify a 2-cell margin on all sides
-            // TODO: make this a preference
-            hints.put(EncodeHintType.MARGIN, 2);
-            codeSize -= 4;
-        }
-
-        CodeMetric metric = CodeMetric.create(codeFormat);
-        metric.setDimension(codeSize);
-        int codeCapacity = metric.getCapacity();
-
-        int dataRemaining;
 
         if (savedInstanceState == null) {
             Intent intent = getIntent();
@@ -128,13 +121,13 @@ public class Send extends Activity {
 
             if (data != null) {
                 dataReader = new StringReader(data);
-                dataRemaining = data.length();
+                remaining = data.length();
             } else {
                 InputStream istream = getContentResolver().openInputStream(uri);
-                dataReader = new InputStreamReader(istream, "ISO-8859-1");
-                dataRemaining = istream.available();
+                dataReader = new BufferedReader(new InputStreamReader(istream, "ISO-8859-1"));
+                remaining = istream.available();
             }
-            dataRemaining -= offset;
+            remaining -= offset;
             dataReader.skip(offset);
 
         } catch (FileNotFoundException e) {
@@ -149,16 +142,38 @@ public class Send extends Activity {
             return;
         }
 
-        // total number of blocks if we use max size
-        total = (dataRemaining - 1) / codeCapacity + 1;
-        // use actual average size given total number
-        buffer = CharBuffer.allocate((dataRemaining - 1) / total + 1);
-
-        total += index;
+        setMetricFromPreference();
+        allocateBufferFromMetric();
 
         if (offset == 0) {
-            Toast.makeText(getApplicationContext(), String.format(getString(R.string.send_sending_summary), dataRemaining, total), Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), String.format(getString(R.string.send_sending_summary), remaining, total), Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void setMetricFromPreference() {
+        // Guess the max barcode capacity given a target cell size
+        float minCellMicrometers = Float.valueOf(sharedPref.getString("cell_size", "640"));
+        int codeSize = (int)(displayInches * 25400f / minCellMicrometers);
+
+        codeMetric.setDimension(codeSize);
+    }
+
+    private void allocateBufferFromMetric() {
+        int codeCapacity = codeMetric.getCapacity();
+
+        // total number of blocks if we use max size
+        total = (remaining - 1) / codeCapacity + 1;
+        // use actual average size given total number
+        buffer = CharBuffer.allocate((remaining - 1) / total + 1);
+
+        total += index;
+    }
+
+    private void setPreferenceFromMetric() {
+        int codeSize = codeMetric.getDimension();
+        float displayMicrometers = displayInches * 25400f;
+        int minCellMicrometers = (int)(displayMicrometers / (codeSize + 1)) + 1;
+        sharedPref.edit().putString("cell_size", String.valueOf(minCellMicrometers)).commit();
     }
 
     @Override
@@ -171,15 +186,32 @@ public class Send extends Activity {
 
     @Override
     public boolean onKeyDown(int code, KeyEvent event) {
-        if (code == KeyEvent.KEYCODE_CAMERA
-                || code == KeyEvent.KEYCODE_MENU) {
-            readOne();
-            writeOne();
-            return true;
+        switch(code) {
+            case KeyEvent.KEYCODE_CAMERA:
+            case KeyEvent.KEYCODE_MENU:
+                readOne();
+                writeOne();
+                return true;
+            case KeyEvent.KEYCODE_VOLUME_DOWN:
+            case KeyEvent.KEYCODE_VOLUME_UP:
+                unreadOne();
+                int capacity = buffer.capacity();
+                try {
+                    do {
+                        if (code == KeyEvent.KEYCODE_VOLUME_DOWN)
+                            codeMetric.grow();
+                        else
+                            codeMetric.shrink();
+                        allocateBufferFromMetric();
+                    } while (capacity == buffer.capacity());
+                } catch (IndexOutOfBoundsException e) { }
+                setPreferenceFromMetric();
+                readOne();
+                writeOne();
+                return true;
+            default:
+                return super.onKeyDown(code, event);
         }
-        if (super.onKeyDown(code, event))
-            return true;
-        return false;
     }
 
 
@@ -192,15 +224,31 @@ public class Send extends Activity {
         try {
             buffer.rewind();
             buffer.limit(buffer.capacity());
+            dataReader.mark(buffer.capacity());
             int len = dataReader.read(buffer);
             if (len <= 0) {
                 setResult(RESULT_OK, getIntent());
                 finish();
             }
+            index ++;
+            offset += len;
+            remaining -= len;
         } catch (IOException e) {
-            Toast.makeText(getApplicationContext(), String.format(getString(R.string.except_io), e.getMessage(), ""), Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), String.format(getString(R.string.except_io), e.getMessage(), "readOne()"), Toast.LENGTH_LONG).show();
             e.printStackTrace();
             cancel();
+        }
+    }
+
+    private void unreadOne() {
+        try {
+            dataReader.reset();
+            int len = buffer.position();
+            remaining += len;
+            offset -= len;
+            index--;
+        } catch(IOException e) {
+            Toast.makeText(getApplicationContext(), String.format(getString(R.string.except_io), e.getMessage(), "unreadOne()"), Toast.LENGTH_LONG);
         }
     }
 
@@ -208,8 +256,6 @@ public class Send extends Activity {
         int len = buffer.position();
         if (len == 0)
             return;
-        index ++;
-        offset += len;
 
         buffer.rewind();
         buffer.limit(len);
@@ -222,6 +268,7 @@ public class Send extends Activity {
             cancel();
             return;
         }
+        buffer.position(len);
 
         int[] pixels = new int[displaySize * displaySize];
         int pixelIndex = 0;
