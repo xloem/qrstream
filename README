@@ -6,3 +6,49 @@ Existing work:
   "Watch it & Got it" -- https://code.google.com/p/watchitgotit/
   qrcodetransfer / "Jumping the Gap" -- https://github.com/VolumeLabs/qrcodetransfer
   file2qr-qr2file -- https://github.com/eandriol/file2qr-qr2file
+
+
+== Using QRStream with the Linux terminal ==
+
+Use zbarcam development sources to read from a webcam:
+
+	$ zbarcam --raw | iconv -f UTF-8 -o ISO-8859-1 |
+	while true; do
+		dd bs=[blocksize] count=1 status=none
+		dd bs=1 count=0 skip=1 status=none
+	done > outputfile
+
+  where [blocksize] is the block size QRStream is using, shown below the
+  barcode.  The extra byte needs to be read because zbarcam places a linebreak
+  after every code.  Ctrl-C to finish.
+
+  zbarcam v0.10 will not handle binary data correctly -- it terminates each
+  code when it hits a nul character.  This issue is resolved in the development
+  sources.
+  
+  Some webcams will require LD_PRELOAD=/usr/lib/libv4l/v4l2convert.so in the
+  environment to work with zbarcam.
+
+Use qrencode -8 to produce codes:
+
+	$ split inputfile -d -b 367 'Code #' -a 4 --filter='clear
+		echo $FILE
+		qrencode -8 -m 2 -t utf8
+		read </dev/tty'
+
+  Increase the block size from 367 to enlarge the codes.  Optimal values are in
+  android/app/src/main/java/com/github/xloem/qrstream/QRCodeMetric.java .
+  Press enter to advance the code.  Ctrl-C to abort.
+
+Use zint --binary with for example feh to show codes:
+
+	$ split inputfile -d -b 367 'Code #' -a 4 --filter='
+		zint --binary -b 58 --border=2 -o "$FILE".png -i -'
+	$ feh -dZF --force-aliasing 'Code #'*.png
+	$ rm 'Code #'*.png
+
+  Increase the block size from 367 to enlarge the codes.  Space or mousebutton
+  to advance.  Arrow keys to navigate.  'Q' to quit.
+
+  Although zint supports aztec codes, there is some bug with binary data when
+  using them.  The data becomes corrupt.
