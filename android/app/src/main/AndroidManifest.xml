@@ -9,8 +9,7 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name" >
         <activity
-            android:name=".Launcher"
-            android:label="@string/app_name" >
+            android:name=".Launcher" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -19,7 +18,7 @@
         </activity>
         <activity
             android:name=".Receive"
-            android:label="@string/app_name" >
+            android:screenOrientation="sensorLandscape" >
             <intent-filter>
                 <action android:name="android.intent.action.GET_CONTENT" />
 
@@ -31,7 +30,6 @@
         </activity>
         <activity
             android:name=".Send"
-            android:label="@string/app_name"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
@@ -42,8 +40,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".Settings"
-            android:label="@string/title_activity_settings" >
+            android:name=".Settings" >
         </activity>
     </application>
 
