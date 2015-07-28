@@ -31,7 +31,8 @@ Use zbarcam development sources to read from a webcam:
 
 Use qrencode -8 to produce codes:
 
-	$ split inputfile -d -b 367 'Code #' -a 4 --filter='clear
+	$ split inputfile -b 367 'Code #' -a 4 --numeric-suffixes=1 --filter='
+		clear
 		echo $FILE
 		qrencode -8 -m 2 -t utf8
 		read </dev/tty'
@@ -42,7 +43,7 @@ Use qrencode -8 to produce codes:
 
 Use zint --binary with for example feh to show codes:
 
-	$ split inputfile -d -b 367 'Code #' -a 4 --filter='
+	$ split inputfile -b 367 'Code #' -a 4 --numeric-suffixes=1 --filter='
 		zint --binary -b 58 --border=2 -o "$FILE".png -i -'
 	$ feh -dZF --force-aliasing 'Code #'*.png
 	$ rm 'Code #'*.png
