@@ -14,13 +14,12 @@ Use zbarcam development sources to read from a webcam:
 
 	$ zbarcam --raw | iconv -f UTF-8 -t ISO-8859-1 |
 	while true; do
-		dd bs=[blocksize] count=1 status=none
-		dd bs=1 count=0 skip=1 status=none
+		dd bs=[blocksize+1] count=1 status=none | head -c -1
 	done > outputfile
 
-  where [blocksize] is the block size QRStream is using, shown below the
-  barcode.  The extra byte needs to be read because zbarcam places a linebreak
-  after every code.  Ctrl-C to finish.
+  where [blocksize+1] is one more than the block size QRStream is using, shown
+  below the barcode.  The extra byte needs to be read because zbarcam places a
+  linebreak after every code.  Ctrl-C to finish.
 
   zbarcam v0.10 will not handle binary data correctly -- it terminates each
   code when it hits a nul character.  This issue is resolved in the development
