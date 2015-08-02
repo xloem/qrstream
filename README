@@ -12,7 +12,7 @@ Existing work:
 
 Use zbarcam development sources to read from a webcam:
 
-	$ zbarcam --raw | iconv -f UTF-8 -o ISO-8859-1 |
+	$ zbarcam --raw | iconv -f UTF-8 -t ISO-8859-1 |
 	while true; do
 		dd bs=[blocksize] count=1 status=none
 		dd bs=1 count=0 skip=1 status=none
