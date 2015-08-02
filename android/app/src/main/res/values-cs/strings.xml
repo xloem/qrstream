@@ -6,5 +6,15 @@
     <string name="launcher_send_file">Odeslat soubor</string>
     <string name="launcher_send_clipboard">Odeslat obsah schránky</string>
     <string name="launcher_settings">Nastavení...</string>
+    <string name="launcher_result_clip_path">Výsledek do schránky a %s</string>
+    <string name="send_code_label">#%1$d/%2$d blocksize=%3$d offset=%4$d</string>
+    <string name="send_instructions">Ťuknout na menu nebo kameru pro pokračování.</string>
+    <string name="send_sending_summary">Odesílám %1$d bytů v %2$d kódech</string>
+    <string name="receive_zxing_prompt">Skenovat kód #%d nebo ťuknout zpět pro ukončení.</string>
+
+    <string name="except_clipboard_empty">Ve schránce nebylo nic nalezeno.</string>
+    <string name="except_file_not_found">Soubor nenalezen: %s</string>
+    <string name="except_io">IO chyba: %1$s: %2$s</string>
+    <string name="except_unexpected_intent">%1$s spuštěn s neočekávaným dotazem %2$s</string>
 
 </resources>
