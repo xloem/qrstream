@@ -3,6 +3,7 @@ A simple Android application to transfer large blocks of data via successive QR 
 License: Public Domain
 
 Existing work:
+  tagdrop -- https://github.com/mofosyne/tagdrop
   "Watch it & Got it" -- https://code.google.com/p/watchitgotit/
   qrcodetransfer / "Jumping the Gap" -- https://github.com/VolumeLabs/qrcodetransfer
   file2qr-qr2file -- https://github.com/eandriol/file2qr-qr2file
