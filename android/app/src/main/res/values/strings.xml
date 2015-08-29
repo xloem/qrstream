@@ -16,5 +16,6 @@
     <string name="except_file_not_found">File not found: %s</string>
     <string name="except_io">IO Error: %1$s: %2$s</string>
     <string name="except_unexpected_intent">%1$s launched with unexepected intent %2$s</string>
+    <string name="advance_button">Advance</string>
 
 </resources>
