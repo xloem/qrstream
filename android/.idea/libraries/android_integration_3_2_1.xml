@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="android-integration-3.2.1">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.zxing/android-integration/3.2.1/87a3d7da33a6c633fb1ff30023dbf0d05e8ea74c/android-integration-3.2.1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.zxing/android-integration/3.2.1/125338522deeb1c90fb17c46a902e9b8caaa7a1f/android-integration-3.2.1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
