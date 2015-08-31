@@ -16,6 +16,7 @@ import android.preference.PreferenceManager;
 import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.KeyEvent;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -214,7 +215,6 @@ public class Send extends Activity {
         }
     }
 
-
     private void cancel() {
         setResult(RESULT_CANCELED, getIntent());
         finish();
@@ -287,4 +287,13 @@ public class Send extends Activity {
         codeLabel.setText(String.format(getString(R.string.send_code_label), index, total, len, offset - len));
     }
 
+    /*
+        Buttons
+     */
+
+    // Does the same thing as pressing menu or camera. But easier to understand.
+    public void onNextButton( View v ){
+        readOne();
+        writeOne();
+    }
 }
