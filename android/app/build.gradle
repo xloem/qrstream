@@ -19,7 +19,8 @@ android {
     }
     buildTypes {
         release {
-            runProguard false
+            // TODO: would enabling this decrease the apk size?
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
