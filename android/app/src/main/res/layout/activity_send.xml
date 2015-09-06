@@ -14,13 +14,21 @@
         android:orientation="vertical"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:paddingLeft="4dp"
-        android:gravity="center">
+        android:padding="4dp"
+        android:gravity="top|right">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/code_label" />
+
+        <Button
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/advance_button"
+            android:id="@+id/button"
+            android:onClick="onNextButton"
+            />
 
         <TextView
             android:layout_width="wrap_content"
@@ -28,15 +36,6 @@
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:text="@string/send_instructions"
              />
-
-        <Button
-            android:layout_width="377dp"
-            android:layout_height="wrap_content"
-            android:text="@string/advance_button"
-            android:id="@+id/button"
-            android:layout_gravity="right"
-            android:onClick="onNextButton"
-            />
 
 
     </LinearLayout>
