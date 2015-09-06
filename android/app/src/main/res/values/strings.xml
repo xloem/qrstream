@@ -8,7 +8,7 @@
     <string name="launcher_settings">Settings...</string>
     <string name="launcher_result_clip_path">Result in clipboard and %s</string>
     <string name="send_code_label">#%1$d/%2$d blocksize=%3$d offset=%4$d</string>
-    <string name="send_instructions">Tap Menu or Camera to advance.</string>
+    <string name="send_instructions">Volume Up/Down: adjust code size\nMenu/Camera: advance code</string>
     <string name="send_sending_summary">Sending %1$d bytes in %2$d codes</string>
     <string name="receive_zxing_prompt">Scan code #%d or hit back if done.</string>
 
