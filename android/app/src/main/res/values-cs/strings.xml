@@ -16,5 +16,6 @@
     <string name="except_file_not_found">Soubor nenalezen: %s</string>
     <string name="except_io">IO chyba: %1$s: %2$s</string>
     <string name="except_unexpected_intent">%1$s spuštěn s neočekávaným dotazem %2$s</string>
+    <string name="advance_button">Pokračovat</string>
 
 </resources>
