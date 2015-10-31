@@ -11,8 +11,8 @@ android {
         // set to 10 because there is no sdk 9 available
         minSdkVersion 10
         targetSdkVersion 22
-        versionCode 8
-        versionName "1.1.3"
+        versionCode 9
+        versionName "1.1.4"
     }
     lintOptions {
         warning 'MissingTranslation'
