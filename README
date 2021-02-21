@@ -1,5 +1,7 @@
 NOTE: this application is no longer being actively developed.
 If you'd like to take it over, open an issue and I can give you access to this repo.
+A newer app with some more features that I didn't get quite published or polished,
+and is written in python instead of java, is https://github.com/xloem/TXQRApp
 
 A simple Android application to transfer large blocks of data via successive QR codes.
 Sends the data in raw subsequent chunks using no additional protocol, to make it easy
